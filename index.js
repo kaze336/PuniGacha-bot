@@ -14,7 +14,7 @@ const {
 const fs = require("fs");
 
 /* ========= 設定 ========= */
-const TOKEN = "MTQ1NTAwNjM1MDY1OTU1NTQxOA.GmryWD.bVtLqz1zncwjaX20qIG10Ns1cHC1twGg4h4HKc";
+const TOKEN = "MTQ1NTAwNjM1MDY1OTU1NTQxOA.GLVeJe.k3AmEUDmRR315MoVsnCLwiWNrUgxqqYs7qgKhE";
 const GACHA_CHANNEL_ID = "1455005226892398826";
 const RANK_CHANNEL_ID = "1455005604278964245";
 const COOLDOWN_MIN = 60;
@@ -50,14 +50,16 @@ function draw10() {
   const chars = data.characters;
   if (chars.length === 0) return [];
 
-  const totalWeight = chars.reduce((acc, c) => acc + (Number(c.rate) || 1), 0);
+  // 全キャラクターのレート合計を計算（これが100なら「設定値＝％」になる）
+  const totalWeight = chars.reduce((acc, c) => acc + (Number(c.rate) || 0), 0);
+  if (totalWeight <= 0) return [];
 
   const results = [];
   for (let i = 0; i < 10; i++) {
     let r = Math.random() * totalWeight;
     let picked = false;
     for (const c of chars) {
-      const rate = Number(c.rate) || 1;
+      const rate = Number(c.rate) || 0;
       if (r < rate) {
         results.push(c);
         picked = true;
@@ -65,8 +67,8 @@ function draw10() {
       }
       r -= rate;
     }
-    // 誤差対策：もし決まらなかったら最後のキャラを入れる
-    if (!picked) results.push(chars[chars.length - 1]);
+    // 念のためのフォールバック
+    if (!picked && chars.length > 0) results.push(chars[chars.length - 1]);
   }
   return results;
 }
@@ -213,7 +215,7 @@ client.on("interactionCreate", async (i) => {
 
     // ガチャデータが空の場合のハンドリング
     if (results.length < 10) {
-      return i.reply({ content: "ガチャデータが正しく設定されていません。", ephemeral: true });
+      return i.reply({ content: "ガチャデータが正しく設定されていません。(キャラクターが登録されていないか、確率が0です)", ephemeral: true });
     }
 
     setCooldown(i.user.id);
@@ -329,8 +331,10 @@ client.on("interactionCreate", async (i) => {
 
   if (i.isButton() && i.customId === "admin_list") {
     const d = load("./gacha.json");
+    const total = d.characters.reduce((acc, c) => acc + (Number(c.rate) || 0), 0);
+    const list = d.characters.map((c) => `[${c.id}] ${c.rank} ${c.name} (確率重み: ${c.rate})`).join("\n");
     return i.reply({
-      content: d.characters.map((c) => `[${c.id}] ${c.rank} ${c.name}`).join("\n") || "未登録",
+      content: `📦 **キャラ一覧** (合計レート: ${total})\n※合計が100の時、レートがそのまま％になります\n\n${list || "未登録"}`,
       ephemeral: true,
     });
   }
