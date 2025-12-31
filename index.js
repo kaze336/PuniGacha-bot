@@ -367,4 +367,5 @@ client.on("interactionCreate", async (i) => {
   }
 });
 
-client.login(TOKEN);
+
+client.login(process.env.BOT_TOKEN);
