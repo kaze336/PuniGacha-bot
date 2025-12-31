@@ -1,0 +1,33 @@
+{
+  "gacha_name": "年末年始ガチャ",
+  "characters": [
+    {
+      "id": "000001",
+      "rank": "uz",
+      "name": "覚醒ジバニャン",
+      "image": "https://share.google/images/dA4SZs8WVBxfWtYwA",
+      "rate": 10
+    },
+    {
+      "id": "000002",
+      "rank": "a",
+      "name": "からかさ魔人",
+      "image": "https://share.google/images/vJK8MSeBx9qJiibkP",
+      "rate": 10
+    },
+    {
+      "id": "000003",
+      "rank": "uz",
+      "name": "アルル",
+      "image": "https://share.google/images/xIDmb3aWZb71dz6xw",
+      "rate": 10
+    },
+    {
+      "id": "000004",
+      "rank": "b",
+      "name": "綾波レイ",
+      "image": "https://share.google/images/JG5XdTaQH3JrZB47K",
+      "rate": 10
+    }
+  ]
+}
